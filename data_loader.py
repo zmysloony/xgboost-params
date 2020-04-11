@@ -5,15 +5,21 @@ import model
 
 
 def unpack_data():
+    if not os.path.exists('data/porto-seguro-safe-driver-prediction.zip'):
+        print('Download data from https://www.kaggle.com/c/porto-seguro-safe-driver-prediction/data and put it in '
+              '/data folder.')
+        return False
     with ZipFile('data/porto-seguro-safe-driver-prediction.zip') as zipped:
         print('Extracting...')
         zipped.extractall('data/')
         print('Extracted successfully.')
+    return True
 
 
 def check_data_files():
-    if not (os.path.exists('data/sample_submission.csv') and os.path.exists('data/test.csv') and os.path.exists('data/train.csv')):
-        unpack_data()
+    if not os.path.exists('data/train.csv'):
+        return unpack_data()
+    return True
 
 
 # data is 100% complete, no missing attributes
@@ -26,6 +32,7 @@ def get_train(rows=10000):
 
 
 if __name__ == '__main__':
-    check_data_files()
+    if not check_data_files():
+        exit(1)
     data, target = get_train(10000)
     mdl = model.train(data, target)
