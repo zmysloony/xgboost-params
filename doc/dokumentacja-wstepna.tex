@@ -103,6 +103,8 @@ Po wstępnej analizie danych odkryliśmy, że w zbiorze danych posiadamy około 
 
 Największym winowajcą jest atrybut binarny \textsl{ps\_car\_03\_cat}, którego brakuje aż w 70\% wierszy, oraz atrybut \textsl{ps\_car\_05\_cat} (brakuje go w 44\% przypadków).
 
+Dodatkowo, wystaępuje znaczna dysproporcja między klasami rekordów - tylko 3\% wierszy opisuje klientów, którzy skorzystali z ubezpieczenia. Stąd niezbędna będzie interpolacja danych, tak aby ilość rekordów obu klas była równa.
+
 \subsection{Uzupełnienie brakujących danych}
 W związku z powyższym, planujemy uzupełnić brakujące atrybuty na bazie kompletnych wierszy danych. Do tego zastosujemy bibliotekę pythonową \textsl{impyute}, ale nie będziemy analizować, jaka jest zależność między konkretnymi metodami interpolacji wybrakowanych atrybutów a hiperparametrami trenowanego klasyfikatora - ręcznie wybierzemy tą, która daje najlepsze (i najszybsze) rezultaty.
 
@@ -111,13 +113,13 @@ Końcową wersję naszego algorytmu heurystycznego planujemy przetestować przy 
 
 
 \section{Propozycja rozwiązania}
-Planujemy zaimplementowac 2 algorytmy heurystyczne 
+Planujemy zaimplementować 2 algorytmy heurystyczne:
 \begin{itemize}
-	\item stohastyczny algorytm wspinaczkowy z tabu
+	\item stochastyczny algorytm wspinaczkowy z tabu
 	\item klasyczny algorytm wspinaczkowy z tabu \\
 		\textsl{[dla parametrów liczbowych przegląda sąsiednich]}
 \end{itemize}
-oraz metodę bazoawa : przegląd wyczerpujący.
+oraz metodę bazową : przegląd wyczerpujący.
 
 \section{Funkcja celu}
 Jako funkcję celu planujemy wykorzystać \textsl{przewidywany koszt}
@@ -134,16 +136,16 @@ gdzie :
 	\item \textsl{cost(x)} to koszt/kara za x
 	\item \textsl{x} - może oznaczać :
 		\begin{itemize}
-			\item[\textit{p} -] pozytywna predykcję
-			\item[\textit{n} -] negatywna predykcję
-			\item[\textit{tp} -] pozytywna prawidłowa predykcję
-			\item[\textit{fp} -] pozytywna negatywna predykcję
-			\item[\textit{t}n -] negatywna prawidłowa predykcję
-			\item[\textit{fn} -] negatywna negatywna predykcję
+			\item[\textit{p} -] pozytywną predykcję
+			\item[\textit{n} -] negatywną predykcję
+			\item[\textit{tp} -] pozytywną prawidłową predykcję
+			\item[\textit{fp} -] pozytywną fałszywą predykcję
+			\item[\textit{t}n -] negatywną prawidłową predykcję
+			\item[\textit{fn} -] negatywną fałszywą predykcję
 		\end{itemize}
 \end{itemize}
 Gdzie przewidywane koszta i straty preedykcji będą możliwe do zmiany jako parametry uruchomienia.
 
 \section{Sposób mierzenia jakości rozwiązania}
-Będziemy porównywać algorytmu pod kątem czasu działania względem wyczerpującego przeglądu, analizując czy zysk z szybszego doboru parametrów jest wystarczająco duzy by go stosować dla różnych limitów przejrzanych kombinacji dla naszych algorytmów.
+Będziemy porównywać algorytm pod kątem czasu działania względem wyczerpującego przeglądu, analizując czy zysk z szybszego doboru parametrów jest wystarczająco duży, by go stosować dla różnych limitów przejrzanych kombinacji dla naszych algorytmów.
 \end{document}
