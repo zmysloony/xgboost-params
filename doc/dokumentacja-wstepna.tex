@@ -111,20 +111,39 @@ Końcową wersję naszego algorytmu heurystycznego planujemy przetestować przy 
 
 
 \section{Propozycja rozwiązania}
-////////////////TODO: chyba faktycznie weźmy algo wspinaczkowy z tabu i bez plus może jeszcze jakiś jeden na pałę, dla porównania - IMO genetyczny jakiś
+Planujemy zaimplementowac 2 algorytmy heurystyczne 
+\begin{itemize}
+	\item stohastyczny algorytm wspinaczkowy z tabu
+	\item klasyczny algorytm wspinaczkowy z tabu \\
+		\textsl{[dla parametrów liczbowych przegląda sąsiednich]}
+\end{itemize}
+oraz metodę bazoawa : przegląd wyczerpujący.
 
 \section{Funkcja celu}
-///////////////TODO: skoro mamy firme ubezpieczeniową, to Expected cost jest chyba najlepszy, tu jest ladnie opisany:
-https://www.svds.com/the-basics-of-classifier-evaluation-part-1/
+Jako funkcję celu planujemy wykorzystać \textsl{przewidywany koszt}
+% https://www.svds.com/the-basics-of-classifier-evaluation-part-1/
 
-Expected cost = p(p) × [ p(true positive) × benefit(true positive)
-                        + p(false negative) × cost(false negative) ]
-              + p(n) × [ p(true negative) × benefit(true negative)
-                        + p(false positive) × cost(false positive) ]
-                        
-Pewnie przydaloby sie znalezc jakies typowy zysk na 1 rok z ubezpieczenia (zysk dla firmy) i sredni koszt wyplaty ubezpieczenia jednemu klientowi. 
+\begin{verbatim}
+Expected cost = p(p) × [ p(tp) × benefit(tp) + p(fn) × cost(fn) ]
+              + p(n) × [ p(tn) × benefit(tn) + p(fp) × cost(fp) ]
+\end{verbatim}           
+gdzie :
+\begin{itemize}
+	\item \textsl{P(x)} to prawdopodonieństwo x
+	\item \textsl{benefit(x)} to zysk z x
+	\item \textsl{cost(x)} to koszt/kara za x
+	\item \textsl{x} - może oznaczać :
+		\begin{itemize}
+			\item[\textit{p} -] pozytywna predykcję
+			\item[\textit{n} -] negatywna predykcję
+			\item[\textit{tp} -] pozytywna prawidłowa predykcję
+			\item[\textit{fp} -] pozytywna negatywna predykcję
+			\item[\textit{t}n -] negatywna prawidłowa predykcję
+			\item[\textit{fn} -] negatywna negatywna predykcję
+		\end{itemize}
+\end{itemize}
+Gdzie przewidywane koszta i straty preedykcji będą możliwe do zmiany jako parametry uruchomienia.
 
 \section{Sposób mierzenia jakości rozwiązania}
-//////////////TODO: czy to nie dokladnie to samo co po prostu funkcja celu? czy moze chodzi o to zeby opisać jak sprawdzamy to (k-krotne walidacje itp.).
-Chociaz deja napisal to \textsl{"sposobu mierzenia jakości rozwiązania (podsumowania wyników)."} i nie wiem co ma podsumowanie wynikow do tego sposobu mierzenia jakosci rozwiazania, moze ty lepiej zrozumiesz.
+Będziemy porównywać algorytmu pod kątem czasu działania względem wyczerpującego przeglądu, analizując czy zysk z szybszego doboru parametrów jest wystarczająco duzy by go stosować dla różnych limitów przejrzanych kombinacji dla naszych algorytmów.
 \end{document}
