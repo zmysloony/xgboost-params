@@ -1,4 +1,4 @@
-
+*.pyc
 # Created by https://www.gitignore.io/api/pycharm
 # Edit at https://www.gitignore.io/?templates=pycharm
 
@@ -50,7 +50,7 @@ cmake-build-*/
 
 # IntelliJ
 out/
-
+venv/
 # mpeltonen/sbt-idea plugin
 .idea_modules/
 
