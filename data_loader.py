@@ -2,6 +2,7 @@ import os.path
 from zipfile import ZipFile
 import pandas as pd
 import model
+import data_analysis
 
 
 def unpack_data():
@@ -31,8 +32,13 @@ def get_train(rows=10000):
     return d, targt
 
 
+def get_train_df():
+    return pd.read_csv('data/train.csv', header=0)
+
+
 if __name__ == '__main__':
     if not check_data_files():
         exit(1)
+    data_analysis.analyse_dataset(get_train_df())
     data, target = get_train(10000)
     mdl = model.train(data, target)
