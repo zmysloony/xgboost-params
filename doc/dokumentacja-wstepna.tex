@@ -74,7 +74,7 @@
 	\large Dokumentacja wstępna}
 
 \author{Przemysław Stawczyk, Piotr Zmyślony}
-\date{12 kwietnia 2020} % Activate to display a given date or no date (if empty),
+\date{15 kwietnia 2020} % Activate to display a given date or no date (if empty),
 % otherwise the current date is printed 
 
 \begin{document}
@@ -108,20 +108,19 @@ Dodatkowo, wystaępuje znaczna dysproporcja między klasami rekordów - tylko 3\
 \subsection{Uzupełnienie brakujących danych}
 W związku z powyższym, planujemy uzupełnić brakujące atrybuty na bazie kompletnych wierszy danych. Do tego zastosujemy bibliotekę pythonową \textsl{impyute}, ale nie będziemy analizować, jaka jest zależność między konkretnymi metodami interpolacji wybrakowanych atrybutów a hiperparametrami trenowanego klasyfikatora - ręcznie wybierzemy tą, która daje najlepsze (i najszybsze) rezultaty.
 
-\subsection{Alternatywne dane}
-Końcową wersję naszego algorytmu heurystycznego planujemy przetestować przy użyciu dodatkowego zbioru danych dot. przewidywania bankructwa polskich firm, który analizowaliśmy w \href{https://github.com/przestaw/Data_Mining_Bancrupcy}{innym projekcie}.
-
-
 \section{Propozycja rozwiązania}
-Planujemy zaimplementować 2 algorytmy heurystyczne:
+Planujemy zaimplementować następujące algorytmy:
 \begin{itemize}
-	\item stochastyczny algorytm wspinaczkowy z tabu
-	\item klasyczny algorytm wspinaczkowy z tabu \\
-		\textsl{[dla parametrów liczbowych przegląda sąsiednich]}
+	\item stochastyczny algorytm wspinaczkowy z tabu. \\ W wariantach:
+		\begin{itemize}
+			\item z prawdopodobieństwem P mutacji jednego z parametrów
+			\item z prawdopodobieństwem P mutacji każdego z parametrów [w szczególności mogą zmutować wszystkie]
+		\end{itemize}
+	\item przegląd wyczerpujący hipersiatki
 \end{itemize}
-oraz metodę bazową : przegląd wyczerpujący.
+Algorytmy działałyby na siatce o zadanej gęstości [\textsl{parametry próbkowane z względną gęstością np. zakres/50}]
 
-\section{Funkcja celu}
+\section{Funkcja celu - TODO : REWORK}
 Jako funkcję celu planujemy wykorzystać \textsl{przewidywany koszt}
 % https://www.svds.com/the-basics-of-classifier-evaluation-part-1/
 
@@ -148,4 +147,10 @@ Gdzie przewidywane koszta i straty preedykcji będą możliwe do zmiany jako par
 
 \section{Sposób mierzenia jakości rozwiązania}
 Będziemy porównywać algorytm pod kątem czasu działania względem wyczerpującego przeglądu, analizując czy zysk z szybszego doboru parametrów jest wystarczająco duży, by go stosować dla różnych limitów przejrzanych kombinacji dla naszych algorytmów.
+\\
+Zbiór danych zostanie podzielony na 2 podzbiory - uczenia i testowy \textsl{uczący odpowiednio większy}. Na zbiorze testowym nie będziemy uczyć i podejmować decyzji - zostanie on wykorzystany do zmierzenia działania algorytmu po dobraniu wszystkich parametrów. Zbiór uczący będzie działać z k-krotną walidacją krzyrzową lub podzielony na zbiór uczenia i weryfikacji.
+
+\subsection{Weryfikacja rozwiązania na innych danych}
+Końcową wersję naszego algorytmu heurystycznego planujemy przetestować przy użyciu dodatkowego zbioru danych dot. przewidywania bankructwa polskich firm, który analizowaliśmy w \href{https://github.com/przestaw/Data_Mining_Bancrupcy}{innym projekcie}.
+
 \end{document}
