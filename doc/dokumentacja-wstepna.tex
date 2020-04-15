@@ -118,7 +118,32 @@ Planujemy zaimplementować następujące algorytmy:
 		\end{itemize}
 	\item przegląd wyczerpujący hipersiatki
 \end{itemize}
-Algorytmy działałyby na siatce o zadanej gęstości [\textsl{parametry próbkowane z względną gęstością np. zakres/50}]
+%Algorytmy działałyby na siatce o zadanej gęstości [\textsl{parametry próbkowane %z względną gęstością np. zakres/50}]
+
+% booster=gbtree, tree_method = approx
+Trenowane parametry
+\begin{center}
+	\begin{tabular}{|c|c|}
+		\hline
+		nazwa parametu & zakres \\
+		\hline
+		\hline
+		eta &  0.2, 0.3, 0.4, 0.5\\ % 0.3 = default
+		\hline 
+		min\_split\_loss \textit{gamma} & 0, 1, 2, 3\\ % 20 = extremly high
+		\hline 
+		max\_depth & 1, 2... 16\\
+	    \hline
+		min\_child\_weight & 1, 2\\ % TODO float/int ?
+		\hline 
+		max\_delta\_step & 0, 1, 2\\
+		\hline 
+		subsample & 0.5, 0.6, 0.7, 0.8, 0.9\\
+		\hline
+		colsample\_bytree &  0.6, 0.8, 1\\ % 1 = default
+		\hline 
+	\end{tabular}
+\end{center}                         
 
 \section{Funkcja celu - TODO : REWORK}
 Jako funkcję celu planujemy wykorzystać \textsl{przewidywany koszt}
