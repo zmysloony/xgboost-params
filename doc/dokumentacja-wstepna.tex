@@ -85,7 +85,7 @@
 	\clearpage
 
 \section{Treść zadania}
-Naszym zadaniem jest przetestowanie różnych algorytmów heurystycznych/populacyjnych w kontekście problemu strojenia hiperparametrów algorytmu xgboost. Problem wyboru hiperparametrów wynika z ich bardzo dużej ilości, co często rozwiązyne jest poprzez manualny dobór parametrów klasyfikatora.
+Naszym zadaniem jest przetestowanie różnych algorytmów heurystycznych/populacyjnych w kontekście problemu strojenia hiperparametrów algorytmu xgboost. Problem wyboru hiperparametrów wynika z ich bardzo dużej ilości, co często rozwiązane jest poprzez manualny dobór parametrów klasyfikatora.
 
 Projekt zostanie zrealizowany w języku Python 3+.
 \section{Dane testowe}
@@ -103,7 +103,7 @@ Po wstępnej analizie danych odkryliśmy, że w zbiorze danych posiadamy około 
 
 Największym winowajcą jest atrybut binarny \textsl{ps\_car\_03\_cat}, którego brakuje aż w 70\% wierszy, oraz atrybut \textsl{ps\_car\_05\_cat} (brakuje go w 44\% przypadków).
 
-Dodatkowo, wystaępuje znaczna dysproporcja między klasami rekordów - tylko 3\% wierszy opisuje klientów, którzy skorzystali z ubezpieczenia. Stąd niezbędna będzie interpolacja danych, tak aby ilość rekordów obu klas była równa.
+Dodatkowo, występuje znaczna dysproporcja między klasami rekordów - tylko 3\% wierszy opisuje klientów, którzy skorzystali z ubezpieczenia. Stąd niezbędna będzie interpolacja danych, tak aby ilość rekordów obu klas była równa.
 
 \subsection{Uzupełnienie brakujących danych}
 W związku z powyższym, planujemy uzupełnić brakujące atrybuty na bazie kompletnych wierszy danych. Do tego zastosujemy bibliotekę pythonową \textsl{impyute}, ale nie będziemy analizować, jaka jest zależność między konkretnymi metodami interpolacji wybrakowanych atrybutów a hiperparametrami trenowanego klasyfikatora - ręcznie wybierzemy tą, która daje najlepsze (i najszybsze) rezultaty.
@@ -111,17 +111,20 @@ W związku z powyższym, planujemy uzupełnić brakujące atrybuty na bazie komp
 \section{Propozycja rozwiązania}
 Planujemy zaimplementować następujące algorytmy:
 \begin{itemize}
-	\item stochastyczny algorytm wspinaczkowy z tabu. \\ W wariantach:
+	\item mutacyjny algorytm wspinaczkowy z tabu. \\ 
+	W 2 wariantach:
 		\begin{itemize}
-			\item z prawdopodobieństwem P mutacji jednego z parametrów
-			\item z prawdopodobieństwem P mutacji każdego z parametrów [w szczególności mogą zmutować wszystkie]
+			\item z prawdopodobieństwem P mutacji jednego (losowego) z parametrów
+			\item z prawdopodobieństwem P mutacji każdego z parametrów \\
+			(w szczególności mogą zmutować wszystkie)
 		\end{itemize}
-	\item przegląd wyczerpujący hipersiatki
+	Mutacja byłaby przeprowadzana losując jednostajnie ze zbioru elementów w zadanym promieniu od aktualnego (względnym w stosunku do zakresu). W obu wariantach promień mutacji miałby maleć z czasem by od eksploracji przejść do eksploatacji maximum lokalnego. 
+	\item przegląd wyczerpujący hipersiatki jako metoda bazowa
 \end{itemize}
 %Algorytmy działałyby na siatce o zadanej gęstości [\textsl{parametry próbkowane %z względną gęstością np. zakres/50}]
 
 % booster=gbtree, tree_method = approx
-Trenowane parametry
+Trenowane parametry. Forma hipersiatki 
 \begin{center}
 	\begin{tabular}{|c|c|}
 		\hline
@@ -132,48 +135,27 @@ Trenowane parametry
 		\hline 
 		min\_split\_loss \textit{gamma} & 0, 1, 2, 3\\ % 20 = extremly high
 		\hline 
-		max\_depth & 1, 2... 16\\
+		max\_depth & 1, 2, 3 ... 16\\
 	    \hline
 		min\_child\_weight & 1, 2\\ % TODO float/int ?
 		\hline 
 		max\_delta\_step & 0, 1, 2\\
 		\hline 
-		subsample & 0.5, 0.6, 0.7, 0.8, 0.9\\
+		subsample & 0.5, 0.6, 0.7, 0.8, 0.9, 1\\
 		\hline
 		colsample\_bytree &  0.6, 0.8, 1\\ % 1 = default
 		\hline 
 	\end{tabular}
 \end{center}                         
 
-\section{Funkcja celu - TODO : REWORK}
-Jako funkcję celu planujemy wykorzystać \textsl{przewidywany koszt}
-% https://www.svds.com/the-basics-of-classifier-evaluation-part-1/
-
-\begin{verbatim}
-Expected cost = p(p) × [ p(tp) × benefit(tp) + p(fn) × cost(fn) ]
-              + p(n) × [ p(tn) × benefit(tn) + p(fp) × cost(fp) ]
-\end{verbatim}           
-gdzie :
-\begin{itemize}
-	\item \textsl{P(x)} to prawdopodonieństwo x
-	\item \textsl{benefit(x)} to zysk z x
-	\item \textsl{cost(x)} to koszt/kara za x
-	\item \textsl{x} - może oznaczać :
-		\begin{itemize}
-			\item[\textit{p} -] pozytywną predykcję
-			\item[\textit{n} -] negatywną predykcję
-			\item[\textit{tp} -] pozytywną prawidłową predykcję
-			\item[\textit{fp} -] pozytywną fałszywą predykcję
-			\item[\textit{t}n -] negatywną prawidłową predykcję
-			\item[\textit{fn} -] negatywną fałszywą predykcję
-		\end{itemize}
-\end{itemize}
-Gdzie przewidywane koszta i straty preedykcji będą możliwe do zmiany jako parametry uruchomienia.
+\section{Funkcja celu}
+Jako funkcję celu przybraliśmy \textit{Average Precision Recall} obliczając wartość funkcji celu jako średnią arytmetyczną skuteczności przypisania predykcji. Planujemy wykorzystać implementację z pakietu \textit{scikit-learn}.\\
+Ta sama funkcja zostanie wykorzystana do oceny jakości finalnych wytrenowanych modeli na zbiorze testowym.
 
 \section{Sposób mierzenia jakości rozwiązania}
 Będziemy porównywać algorytm pod kątem czasu działania względem wyczerpującego przeglądu, analizując czy zysk z szybszego doboru parametrów jest wystarczająco duży, by go stosować dla różnych limitów przejrzanych kombinacji dla naszych algorytmów.
 \\
-Zbiór danych zostanie podzielony na 2 podzbiory - uczenia i testowy \textsl{uczący odpowiednio większy}. Na zbiorze testowym nie będziemy uczyć i podejmować decyzji - zostanie on wykorzystany do zmierzenia działania algorytmu po dobraniu wszystkich parametrów. Zbiór uczący będzie działać z k-krotną walidacją krzyrzową lub podzielony na zbiór uczenia i weryfikacji.
+Zbiór danych zostanie podzielony na 2 podzbiory - uczenia i testowy \textsl{uczący odpowiednio większy}. Na zbiorze testowym nie będziemy uczyć i podejmować decyzji - zostanie on wykorzystany do zmierzenia działania algorytmu po dobraniu wszystkich parametrów. Zbiór uczący będzie działać z k-krotną walidacją krzyżową lub podzielony na zbiór uczenia i weryfikacyjny.
 
 \subsection{Weryfikacja rozwiązania na innych danych}
 Końcową wersję naszego algorytmu heurystycznego planujemy przetestować przy użyciu dodatkowego zbioru danych dot. przewidywania bankructwa polskich firm, który analizowaliśmy w \href{https://github.com/przestaw/Data_Mining_Bancrupcy}{innym projekcie}.
