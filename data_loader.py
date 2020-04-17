@@ -55,5 +55,13 @@ if __name__ == '__main__':
         # NOTE : we might want to change evaluation to ROC curve as 'auc' is directly Area under ROC curve metric
         # NOTE : might be a parameter to optimize
     }
+    mdl1 = model.train(data, target, param, 25, 5)
 
-    mdl = model.train(data, target, param, 10, 2)
+    param = {
+        'max_depth': 16,  # the maximum depth of each tree
+        'eta': 0.3,  # the training step for each iteration
+        'silent': 1,  # logging mode - quiet
+        'objective': 'multi:softprob',  # error evaluation for multiclass training
+        'num_class': 2}  # the number of classes that exist in this datset
+
+    mdl2 = model.train(data, target, param, 10, 5)
