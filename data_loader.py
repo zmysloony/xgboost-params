@@ -26,10 +26,10 @@ def check_data_files():
 # data is 100% complete, no missing attributes
 # max rows = 595212
 def get_train(rows=10000):
-    d = pd.read_csv('data/train.csv', nrows=rows, header=0)
-    targt = d['target']
-    d = d.drop(['id', 'target'], axis=1)
-    return d, targt
+    train_data = pd.read_csv('data/train.csv', nrows=rows, header=0)
+    train_target = train_data['target']
+    train_data = train_data.drop(['id', 'target'], axis=1)
+    return train_data, train_target
 
 
 def get_train_df():
@@ -40,5 +40,20 @@ if __name__ == '__main__':
     if not check_data_files():
         exit(1)
     data_analysis.analyse_dataset(get_train_df())
-    data, target = get_train(10000)
-    mdl = model.train(data, target)
+    data, target = get_train(40000)
+
+    param = {
+        # TODO : params for search - will be prepared in search algorithm functions
+        'max_depth': 32,  # the maximum depth of each tree
+        'eta': 0.3,  # the training step for each iteration
+        'silent': 1,  # logging mode - quiet
+
+        'objective': 'binary:hinge',
+        # 'num_class': 2,  # the number of classes that exist in this datset
+        # NOTE : num_class not used in binary classification
+        'eval_metric': 'aucpr'  # use area under precision & recall curve as eval_metric
+        # NOTE : we might want to change evaluation to ROC curve as 'auc' is directly Area under ROC curve metric
+        # NOTE : might be a parameter to optimize
+    }
+
+    mdl = model.train(data, target, param, 50, 2)

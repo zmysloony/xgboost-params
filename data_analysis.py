@@ -27,8 +27,10 @@ def generate_sparsity_matrix(dataframe, print=False, save=False):
 
 def check_data_imbalance(dataframe):
     print(dataframe.groupby('target').size())
-    minority_percent = (dataframe['target'].tolist().count(1) / len(dataframe['target'].tolist())) * 100
-    print('Minority (label 1) percentage: ' + str(minority_percent) + '%')
+    false_percent = (dataframe['target'].tolist().count(0) / len(dataframe['target'].tolist())) * 100
+    print('(label 0) percentage: ' + str(false_percent) + '%')
+    true_percentage = (dataframe['target'].tolist().count(1) / len(dataframe['target'].tolist())) * 100
+    print('(label 1) percentage: ' + str(true_percentage) + '%')
     print('-' * 64)
 
 
