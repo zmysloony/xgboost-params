@@ -39,12 +39,12 @@ def get_train_df():
 if __name__ == '__main__':
     if not check_data_files():
         exit(1)
-    data_analysis.analyse_dataset(get_train_df())
-    data, target = get_train(40000)
+    # data_analysis.analyse_dataset(get_train_df())
+    data, target = get_train(50000)
 
     param = {
         # TODO : params for search - will be prepared in search algorithm functions
-        'max_depth': 32,  # the maximum depth of each tree
+        'max_depth': 16,  # the maximum depth of each tree
         'eta': 0.3,  # the training step for each iteration
         'silent': 1,  # logging mode - quiet
 
@@ -56,4 +56,4 @@ if __name__ == '__main__':
         # NOTE : might be a parameter to optimize
     }
 
-    mdl = model.train(data, target, param, 50, 2)
+    mdl = model.train(data, target, param, 10, 2)

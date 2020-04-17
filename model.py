@@ -3,6 +3,12 @@ import numpy as np
 from sklearn.model_selection import KFold
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import recall_score, accuracy_score, precision_score
+from imblearn.over_sampling import SMOTE
+
+
+def smote_oversample(features, labels, seed, neighbours=15):
+    smote = SMOTE(random_state=seed, k_neighbors=neighbours)
+    return smote.fit_resample(features, labels)
 
 
 # data - dataset, target - predictions,
@@ -20,7 +26,8 @@ def train(data, target, params, rounds=64, k_fold_ratio=3, rand=3228):
         train_X, valid_X = data_arr[train_index], data_arr[test_index]
         train_y, valid_y = target_arr[train_index], target_arr[test_index]
 
-        # TODO : oversamle train_X + train_y before learning
+        # oversample training set
+        train_X, train_y = smote_oversample(train_X, train_y, rand)
 
         d_train = xgb.DMatrix(train_X, label=train_y)
         d_valid = xgb.DMatrix(valid_X, label=valid_y)
@@ -35,10 +42,10 @@ def train(data, target, params, rounds=64, k_fold_ratio=3, rand=3228):
     final_train = xgb.DMatrix(data, label=target)
     model = xgb.train(params, final_train, rounds)
 
-    iter = 1
+    k_it = 1
     for rec in recalls:
-        print("k = ", iter, " recall = ", rec)
-        iter += 1
+        print("k = ", k_it, " recall = ", rec)
+        k_it += 1
     print("avg recall = ", np.average(recalls))
 
     return model, recalls
@@ -60,5 +67,5 @@ def old_train(data, target, test_ratio=0.33):
     best_preds = np.asarray([np.argmax(line) for line in y_pred])
     accuracy = accuracy_score(y_test, best_preds)
     print("Accuracy: %.2f%%" % (accuracy * 100.0))
-    print("Precision: %.4f%%" % (precision_score(y_test, best_preds, average='macro')))
+    print("Precision: %.4f%%" % (precision_score(y_test, best_preds, average='macro')) * 100)
     return model
