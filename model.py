@@ -1,9 +1,10 @@
-import xgboost as xgb
+import impyute as impy
 import numpy as np
+import xgboost as xgb
+from imblearn.over_sampling import SMOTE
+from sklearn.metrics import recall_score, accuracy_score, precision_score
 from sklearn.model_selection import KFold
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import recall_score, accuracy_score, precision_score
-from imblearn.over_sampling import SMOTE
 
 
 def smote_oversample(features, labels, seed, neighbours=15):
@@ -25,6 +26,9 @@ def train(data, target, params, rounds=64, k_fold_ratio=3, rand=3228):
     for train_index, test_index in k_fold.split(data_arr):
         train_X, valid_X = data_arr[train_index], data_arr[test_index]
         train_y, valid_y = target_arr[train_index], target_arr[test_index]
+
+        # TODO imput
+        train_X = impy.fast_knn(train_X, k=15)
 
         # oversample training set
         train_X, train_y = smote_oversample(train_X, train_y, rand)
