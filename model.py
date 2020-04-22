@@ -16,7 +16,7 @@ def smote_oversample(features, labels, seed, neighbours=15):
 # params - xgboost parameters, rounds - xgboost rounds,
 # k_fold_ratio - no of k-folds, rand - seed for k_fold and xgboost
 # optimized parameters = params & rounds
-def train(data, target, params, rounds=64, k_fold_ratio=3, rand=3228):
+def train(data, target, params, rounds=1, k_fold_ratio=3, rand=3228):
     k_fold = KFold(n_splits=k_fold_ratio, random_state=rand, shuffle=True)
 
     recalls = []
