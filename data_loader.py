@@ -1,8 +1,10 @@
 import os.path
 from zipfile import ZipFile
+
 import pandas as pd
-import model
+
 import data_analysis
+import model
 
 
 def unpack_data():
@@ -40,22 +42,33 @@ if __name__ == '__main__':
     if not check_data_files():
         exit(1)
     # data_analysis.analyse_dataset(get_train_df())
-    data, target = get_train(50000)
+    # data, target = get_train(50000)
+
+    driver_data_clean = get_train_df().head(30000)
+
+    driver_data_clean = data_analysis.replace_to_nan(driver_data_clean)
+
+    driver_data_clean = driver_data_clean.drop('ps_car_03_cat', axis=1)
+    driver_data_clean = driver_data_clean.drop('ps_car_05_cat', axis=1)
+
+    target = driver_data_clean['target']
+    data = driver_data_clean.drop(['id', 'target'], axis=1)
 
     param = {
         # TODO : params for search - will be prepared in search algorithm functions
-        'max_depth': 16,  # the maximum depth of each tree
-        'eta': 0.3,  # the training step for each iteration
+        'max_depth': 5,  # the maximum depth of each tree
+        'eta': 0.01,  # the training step for each iteration
         'silent': 1,  # logging mode - quiet
 
         'objective': 'binary:hinge',
         # 'num_class': 2,  # the number of classes that exist in this datset
         # NOTE : num_class not used in binary classification
-        'eval_metric': 'aucpr'  # use area under precision & recall curve as eval_metric
+        'eval_metric': 'auc',  # use area under precision & recall curve as eval_metric
         # NOTE : we might want to change evaluation to ROC curve as 'auc' is directly Area under ROC curve metric
         # NOTE : might be a parameter to optimize
+        'tree_method': 'gpu_hist'
     }
-    mdl1 = model.train(data, target, param, 25, 5)
+    mdl1 = model.train(data, target, param, 1, 5)
 
     param = {
         'max_depth': 16,  # the maximum depth of each tree
@@ -64,4 +77,4 @@ if __name__ == '__main__':
         'objective': 'multi:softprob',  # error evaluation for multiclass training
         'num_class': 2}  # the number of classes that exist in this datset
 
-    mdl2 = model.train(data, target, param, 10, 5)
+    mdl2 = model.train(data, target, param, 1, 5)
