@@ -44,7 +44,7 @@ if __name__ == '__main__':
     # data_analysis.analyse_dataset(get_train_df())
     # data, target = get_train(50000)
 
-    driver_data_clean = get_train_df().head(30000)
+    driver_data_clean = get_train_df()
 
     driver_data_clean = data_analysis.replace_to_nan(driver_data_clean)
 
@@ -56,8 +56,8 @@ if __name__ == '__main__':
 
     param = {
         # TODO : params for search - will be prepared in search algorithm functions
-        'max_depth': 5,  # the maximum depth of each tree
-        'eta': 0.01,  # the training step for each iteration
+        'max_depth': 10,  # the maximum depth of each tree
+        'eta': 0.05,  # the training step for each iteration
         'silent': 1,  # logging mode - quiet
 
         'objective': 'binary:hinge',
@@ -66,15 +66,7 @@ if __name__ == '__main__':
         'eval_metric': 'auc',  # use area under precision & recall curve as eval_metric
         # NOTE : we might want to change evaluation to ROC curve as 'auc' is directly Area under ROC curve metric
         # NOTE : might be a parameter to optimize
-        'tree_method': 'gpu_hist'
+        'tree_method': 'hist',
+        'nthread': 0
     }
-    mdl1 = model.train(data, target, param, 1, 5)
-
-    param = {
-        'max_depth': 16,  # the maximum depth of each tree
-        'eta': 0.3,  # the training step for each iteration
-        'silent': 1,  # logging mode - quiet
-        'objective': 'multi:softprob',  # error evaluation for multiclass training
-        'num_class': 2}  # the number of classes that exist in this datset
-
-    mdl2 = model.train(data, target, param, 1, 5)
+    mdl1 = model.train(data, target, param, 10, 4)

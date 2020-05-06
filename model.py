@@ -1,8 +1,7 @@
-import impyute as impy
 import numpy as np
 import xgboost as xgb
 from imblearn.over_sampling import SMOTE
-from sklearn.metrics import recall_score, accuracy_score, precision_score
+from sklearn.metrics import accuracy_score, precision_score, roc_auc_score
 from sklearn.model_selection import KFold
 from sklearn.model_selection import train_test_split
 
@@ -27,11 +26,13 @@ def train(data, target, params, rounds=1, k_fold_ratio=3, rand=3228):
         train_X, valid_X = data_arr[train_index], data_arr[test_index]
         train_y, valid_y = target_arr[train_index], target_arr[test_index]
 
-        # TODO imput
-        train_X = impy.fast_knn(train_X, k=15)
+        # FIXME : get rid of - xgboost can handle missing data
+        # train_X = impy.fast_knn(train_X, k=15)
 
         # oversample training set
+        np.where(train_X == np.nan, -1, train_X)
         train_X, train_y = smote_oversample(train_X, train_y, rand)
+        np.where(train_X == -1, np.nan, train_X)
 
         d_train = xgb.DMatrix(train_X, label=train_y)
         d_valid = xgb.DMatrix(valid_X, label=valid_y)
@@ -40,7 +41,7 @@ def train(data, target, params, rounds=1, k_fold_ratio=3, rand=3228):
 
         k_predict = k_model.predict(d_valid)
 
-        k_recall = recall_score(valid_y, np.asarray([np.argmax(line) for line in k_predict]), average='macro')
+        k_recall = roc_auc_score(valid_y, np.asarray([np.argmax(line) for line in k_predict]))
         recalls.append(k_recall)
 
     final_train = xgb.DMatrix(data, label=target)
@@ -48,9 +49,9 @@ def train(data, target, params, rounds=1, k_fold_ratio=3, rand=3228):
 
     k_it = 1
     for rec in recalls:
-        print("k = ", k_it, " recall = ", rec)
+        print("k = ", k_it, " roc_auc_score = ", rec)
         k_it += 1
-    print("avg recall = ", np.average(recalls))
+    print("avg roc_auc_score = ", np.average(recalls))
 
     return model, recalls
 
