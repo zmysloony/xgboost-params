@@ -1,6 +1,8 @@
 from collections.abc import Mapping
 from itertools import product
 
+from model import train as trainXGBmodel
+
 
 class ParameterGrid:
     """Grid of parameters with a discrete number of values for each.
@@ -34,12 +36,17 @@ class ParameterGrid:
 
 
 def perform_brute_force(data, target):
-    params_dict = {'max_depth': [1, 2, 3, 4, 6, 8, 10, 12, 14, 16],
-                   'eta': [0.2, 0.3, 0.4, 0.5],
+    params_dict = {'max_depth': [1, 2, 3, 4, 6, 8, 10, 12, 14, 16, 24],
+                   'eta': [0.1, 0.2, 0.3, 0.4],
                    'gamma': [0, 1, 2, 3],
                    'subsample': [0.6, 0.8, 1],
                    'colsample_bytree': [0.6, 0.8, 1],
-                   'max_delta_step': [0, 1, 2]}
+                   'max_delta_step': [0, 1, 2],
+                   'eval_metric': ['auc'],
+                   'tree_method': ['hist'],
+                   'silent': [1],
+                   'nthread': [0]
+                   }
 
     return brute_force_approach(data, target, params_dict)
 
@@ -51,8 +58,10 @@ def brute_force_approach(data, target, params_dict):
     # another option is to use sklearn-like API in model.train
     #   [but what with impyute and oversample ? we want to modify only learning dataset]
     for it in ParameterGrid(params_dict):
-        print(it)  # TODO search and compare
-        optimal_params = it
+        for n_trees in range(1, 12):
+            print("Params :\n", it, "\ntrees : ", n_trees)  # TODO search and compare
+            optimal_params = it
+            trainXGBmodel(data, target, it, n_trees, 2)
 
     # return also model and metrics?
     return optimal_params

@@ -3,8 +3,7 @@ from zipfile import ZipFile
 
 import pandas as pd
 
-import data_analysis
-import model
+import algorithms
 
 
 def unpack_data():
@@ -44,9 +43,9 @@ if __name__ == '__main__':
     # data_analysis.analyse_dataset(get_train_df())
     # data, target = get_train(50000)
 
-    driver_data_clean = get_train_df()
+    driver_data_clean = get_train_df().head(80000)
 
-    driver_data_clean = data_analysis.replace_to_nan(driver_data_clean)
+    #driver_data_clean = data_analysis.replace_to_nan(driver_data_clean)
 
     driver_data_clean = driver_data_clean.drop('ps_car_03_cat', axis=1)
     driver_data_clean = driver_data_clean.drop('ps_car_05_cat', axis=1)
@@ -54,19 +53,23 @@ if __name__ == '__main__':
     target = driver_data_clean['target']
     data = driver_data_clean.drop(['id', 'target'], axis=1)
 
-    param = {
-        # TODO : params for search - will be prepared in search algorithm functions
-        'max_depth': 10,  # the maximum depth of each tree
-        'eta': 0.05,  # the training step for each iteration
-        'silent': 1,  # logging mode - quiet
+    algorithms.perform_brute_force(data, target)
 
-        'objective': 'binary:hinge',
-        # 'num_class': 2,  # the number of classes that exist in this datset
-        # NOTE : num_class not used in binary classification
-        'eval_metric': 'auc',  # use area under precision & recall curve as eval_metric
-        # NOTE : we might want to change evaluation to ROC curve as 'auc' is directly Area under ROC curve metric
-        # NOTE : might be a parameter to optimize
-        'tree_method': 'hist',
-        'nthread': 0
-    }
-    mdl1 = model.train(data, target, param, 10, 4)
+    # param = {
+    #     # TODO : params for search - will be prepared in search algorithm functions
+    #     'max_depth': 10,  # the maximum depth of each tree
+    #     'eta': 0.05,  # the training step for each iteration
+    #     'silent': 1,  # logging mode - quiet
+    #
+    #     'objective': 'binary:hinge',
+    #     # 'num_class': 2,  # the number of classes that exist in this datset
+    #     # NOTE : num_class not used in binary classification
+    #     'eval_metric': 'auc',  # use area under precision & recall curve as eval_metric
+    #     # NOTE : we might want to change evaluation to ROC curve as 'auc' is directly Area under ROC curve metric
+    #     # NOTE : might be a parameter to optimize
+    #     'tree_method': 'hist',
+    #     'nthread': 0
+    # }
+    # mdl1 = model.train(data, target, param, 10, 4)
+
+
