@@ -28,9 +28,12 @@ def train(data, target, params, rounds=1, k_fold_ratio=3, rand=3228):
         train_y, valid_y = target_arr[train_index], target_arr[test_index]
 
         # oversample training set
-        np.where(train_X == np.nan, -1, train_X)
-        train_X, train_y = smote_oversample(train_X, train_y, rand)
-        np.where(train_X == -1, np.nan, train_X)
+        # np.where(train_X == np.nan, -1, train_X)
+        # train_X, train_y = smote_oversample(train_X, train_y, rand)
+        # np.where(train_X == -1, np.nan, train_X)
+        # undersample training set
+        # undersample = NearMiss(version=1)
+        # train_X, train_y = undersample.fit_resample(train_X, train_y)
 
         d_train = xgb.DMatrix(train_X, label=train_y)
         d_valid = xgb.DMatrix(valid_X, label=valid_y)
@@ -39,7 +42,7 @@ def train(data, target, params, rounds=1, k_fold_ratio=3, rand=3228):
 
         k_predict = k_model.predict(d_valid)
 
-        k_recall = roc_auc_score(valid_y, np.asarray([np.argmax(line) for line in k_predict]))
+        k_recall = roc_auc_score(valid_y, k_predict)
         recalls.append(k_recall)
 
     final_train = xgb.DMatrix(data, label=target)

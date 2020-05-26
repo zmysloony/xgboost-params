@@ -53,7 +53,7 @@ if __name__ == '__main__':
     target = driver_data_clean['target']
     data = driver_data_clean.drop(['id', 'target'], axis=1)
 
-    # algorithms.perform_brute_force(data, target)
+    algorithms.perform_brute_force(data, target)
 
     # param = {
     #     # TODO : params for search - will be prepared in search algorithm functions
