@@ -2,6 +2,7 @@ import os.path
 from zipfile import ZipFile
 
 import pandas as pd
+import hill_climbing
 
 import algorithms
 
@@ -53,8 +54,8 @@ if __name__ == '__main__':
     target = driver_data_clean['target']
     data = driver_data_clean.drop(['id', 'target'], axis=1)
 
-    algorithms.perform_brute_force(data, target)
-
+    #algorithms.perform_brute_force(data, target)
+    hill_climbing.perform_hill_climbing(data, target)
     # param = {
     #     # TODO : params for search - will be prepared in search algorithm functions
     #     'max_depth': 10,  # the maximum depth of each tree

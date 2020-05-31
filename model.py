@@ -54,7 +54,7 @@ def train(data, target, params, rounds=1, k_fold_ratio=3, rand=3228):
         k_it += 1
     print("avg roc_auc_score = ", np.average(recalls))
 
-    return model, recalls
+    return model, np.average(recalls)
 
 
 # data - dataset, target - predictions,
