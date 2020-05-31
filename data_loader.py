@@ -46,7 +46,7 @@ if __name__ == '__main__':
 
     driver_data_clean = get_train_df().head(80000)
 
-    #driver_data_clean = data_analysis.replace_to_nan(driver_data_clean)
+    # driver_data_clean = data_analysis.replace_to_nan(driver_data_clean)
 
     driver_data_clean = driver_data_clean.drop('ps_car_03_cat', axis=1)
     driver_data_clean = driver_data_clean.drop('ps_car_05_cat', axis=1)
@@ -54,8 +54,9 @@ if __name__ == '__main__':
     target = driver_data_clean['target']
     data = driver_data_clean.drop(['id', 'target'], axis=1)
 
-    #algorithms.perform_brute_force(data, target)
-    hill_climbing.perform_hill_climbing(data, target)
+    # algorithms.perform_brute_force(data, target)
+    best_param_set = hill_climbing.perform_hill_climbing(data, target)
+    print(best_param_set)
     # param = {
     #     # TODO : params for search - will be prepared in search algorithm functions
     #     'max_depth': 10,  # the maximum depth of each tree
