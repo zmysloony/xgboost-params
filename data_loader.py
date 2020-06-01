@@ -1,9 +1,6 @@
 import os.path
 from zipfile import ZipFile
-
 import pandas as pd
-import hill_climbing
-
 import algorithms
 
 
@@ -55,7 +52,7 @@ if __name__ == '__main__':
     data = driver_data_clean.drop(['id', 'target'], axis=1)
 
     # algorithms.perform_brute_force(data, target)
-    best_param_set = hill_climbing.perform_hill_climbing(data, target)
+    best_param_set = algorithms.perform_hill_climbing(data, target)
     print(best_param_set)
     # param = {
     #     # TODO : params for search - will be prepared in search algorithm functions
