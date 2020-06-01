@@ -8,7 +8,7 @@ def brute_force_approach(data, target, params_dict):
     optimal_score = None
     for it in ParameterGrid(params_dict):
         for n_trees in [50, 100, 150, 200, 250]:
-            model, score = trainxgb(data, target, it, n_trees, 2)
+            score = trainxgb(data, target, it, n_trees, 2)
             if optimal_score is None or optimal_params is None:
                 optimal_score = score
                 optimal_params = {'dict': it, 'n_trees': n_trees}
