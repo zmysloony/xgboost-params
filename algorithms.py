@@ -21,7 +21,7 @@ def brute_force_approach(data, target, params_dict):
 
 
 def perform_brute_force(data, target):
-    params_dict = {'max_depth': [1, 2, 3, 4, 6, 8, 10, 12, 14, 16, 24],
+    params_dict = {'max_depth': [i for i in range(50, 300, 25)],
                    'eta': [0.1, 0.2, 0.3, 0.4],
                    'gamma': [0, 1, 2, 3],
                    'subsample': [0.6, 0.8, 1],
@@ -51,13 +51,13 @@ def best_neighbor(neighbors, history, data, target):
 # max_worse defines how many max. times we can expand a node, that gives worse results
 # than the best result - if that count exceeds max_worse -> returns best param set
 def perform_hill_climbing(data, target, max_worse=8, ratio=0.7):
-    starting_params = [Param(ParamData('n_estimators', [1, 200], 10)),
+    starting_params = [Param(ParamData('n_estimators', [50, 300], 25)),
                        Param(ParamData('max_depth', [1, 24], 1)),
-                       # Param(ParamData('eta', [0.1, 0.4], 0.1)),
-                       # Param(ParamData('gamma', [0, 3], 1)),
-                       # Param(ParamData('subsample', [0.6, 1], 0.2)),
-                       # Param(ParamData('colsample-bytree', [0.6, 1], 0.2)),
-                       # Param(ParamData('max_delta_step', [0, 2], 1)),
+                       Param(ParamData('eta', [0.1, 0.4], 0.1)),
+                       Param(ParamData('gamma', [0, 3], 1)),
+                       Param(ParamData('subsample', [0.6, 1], 0.2)),
+                       Param(ParamData('colsample-bytree', [0.6, 1], 0.2)),
+                       Param(ParamData('max_delta_step', [0, 2], 1)),
                        Param(ParamData('silent', [1, 1], 1)),
                        Param(ParamData('nthread', [0, 0], 1))]
 
@@ -109,13 +109,13 @@ def perform_hill_climbing(data, target, max_worse=8, ratio=0.7):
 
 # ratio - how many combinations to check
 def perform_mutation_evolution(data, target, ratio=0.4, seed=42):
-    starting_params = [Param(ParamData('n_estimators', [1, 200], 10)),
+    starting_params = [Param(ParamData('n_estimators', [50, 300], 25)),
                        Param(ParamData('max_depth', [1, 24], 1)),
-                       # Param(ParamData('eta', [0.1, 0.4], 0.1)),
-                       # Param(ParamData('gamma', [0, 3], 1)),
-                       # Param(ParamData('subsample', [0.6, 1], 0.2)),
-                       # Param(ParamData('colsample-bytree', [0.6, 1], 0.2)),
-                       # Param(ParamData('max_delta_step', [0, 2], 1)),
+                       Param(ParamData('eta', [0.1, 0.4], 0.1)),
+                       Param(ParamData('gamma', [0, 3], 1)),
+                       Param(ParamData('subsample', [0.6, 1], 0.2)),
+                       Param(ParamData('colsample-bytree', [0.6, 1], 0.2)),
+                       Param(ParamData('max_delta_step', [0, 2], 1)),
                        Param(ParamData('silent', [1, 1], 1)),
                        Param(ParamData('nthread', [0, 0], 1))]
 
@@ -129,26 +129,34 @@ def perform_mutation_evolution(data, target, ratio=0.4, seed=42):
     # init and first train
     current_set.train(data, target)
     history.add_set(current_set)
-    history.mark_expanded(current_set)
     # NOTE : generate_neighbors might not be perfect for this algorithm
     #        consider use of dedicated function
     neighbors = current_set.generate_neighbors(history)
     iteration = 1
 
-    while len(neighbors) > 0 and iteration <= max_iter:  # equals none when all neighbors expanded
+    while iteration <= max_iter:  # equals none when all neighbors expanded
         try:
+            if len(neighbors) == 0:
+                neighbors = current_set.generate_neighbors_wider(history)
+                if len(neighbors) == 0:
+                    break
+                # TODO remove after fix generating mutants
+
             mutant = neighbors[random_num.integers(0, len(neighbors))]
             mutant.train(data, target)
             history.add_set(mutant)
 
             if mutant.score >= current_set.score:  # climb up
-                print("New best, change from " + str(current_set.score) + " to " + str(mutant.score))
+                # print("New best, change from " + str(current_set.score) + " to " + str(mutant.score))
                 current_set = mutant
 
             iteration += 1
+            # neighbors = TODO : current_set.generate_neighbors(history) - replace with method generating mutants -
+            #                    with possibly wider range than 1 step - always at least n
+            #              NOTE : here non of sets are marked 'expanded'
             neighbors = current_set.generate_neighbors(history)
         except KeyboardInterrupt:
-            print("best found:\n", current_set)
+            print("best found so far :\n", current_set)
             return current_set
 
     if iteration == max_iter:
@@ -156,7 +164,7 @@ def perform_mutation_evolution(data, target, ratio=0.4, seed=42):
     else:
         print("No more neighbors, after " + str(iteration) + " iterations.")
 
-    print("best found:\n", current_set)
+    print("best found:\n", current_set.score)
     return current_set
 
     # params_dict = {'max_depth': [1, 2, 3, 4, 6, 8, 10, 12, 14, 16, 24],

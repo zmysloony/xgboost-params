@@ -3,6 +3,7 @@ from itertools import product
 from typing import List
 from model import train_score as trainxgb
 import copy
+import numpy as np
 
 
 class ParamData:
@@ -68,6 +69,9 @@ class ParamSet:
             ls[p.param_data.name] = p.value
             # if p.name != 'n_estimators':
             #     l[p.name] = p.value
+        # TODO
+        ls['eval_metric'] = 'auc'
+        ls['tree_method'] = 'gpu_hist'
         return ls
 
     def train(self, data, target):
@@ -116,10 +120,27 @@ class ParamSet:
                         param_sets.append(s)
         return param_sets
 
+    def generate_neighbors_wider(self, history_sets=None):
+        param_sets = []
+        new_sets = []
+        for i in range(len(self.params)):
+            new_sets = self.gen_neighbors_on_parameter(i)
+
+        for i in new_sets:
+            new_wider_sets = i.generate_neighbors(history_sets)
+            for s in new_wider_sets:
+                if history_sets is None:
+                    param_sets.append(s)
+                else:
+                    if not history_sets.has_set(s):
+                        param_sets.append(s)
+        return param_sets
+
     def max_combinations(self):
         total = 1
         for p in self.params:
-            total *= len(range(p.param_data.min, p.param_data.max, p.param_data.step)) + 1
+            # float arnage works for int
+            total *= len(np.arange(p.param_data.min, p.param_data.max, p.param_data.step)) + 1
         return total
 
 
