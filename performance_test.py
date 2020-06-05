@@ -22,15 +22,15 @@ def perf_test(data, target):
         times['muta_' + str(part)] = end - start
         print('end muta_' + str(part))
 
-    for part in np.arange(0.2, 0.65, 0.15):
-        for worse in [8, 16, 24]:
-            start = time.perf_counter()
-            params["hill_" + str(part) + '_' + str(worse)] = algorithms.perform_hill_climbing(data, target,
-                                                                                              max_worse=worse,
-                                                                                              ratio=part).extract_params()
-            end = time.perf_counter()
-            times["hill_" + str(part) + '_' + str(worse)] = end - start
-            print('end hill_' + str(part) + '_' + str(worse))
+    # for part in np.arange(0.2, 0.65, 0.15):
+    #     for worse in [8, 16, 24]:
+    #         start = time.perf_counter()
+    #         params["hill_" + str(part) + '_' + str(worse)] = algorithms.perform_hill_climbing(data, target,
+    #                                                                                           max_worse=worse,
+    #                                                                                           ratio=part).extract_params()
+    #         end = time.perf_counter()
+    #         times["hill_" + str(part) + '_' + str(worse)] = end - start
+    #         print('end hill_' + str(part) + '_' + str(worse))
 
     print(params)
     print(times)

@@ -44,6 +44,29 @@ class Param:
         if self.can_higher():
             return Param(self.param_data, self.value + self.param_data.step)
 
+    def random(self, seed):
+        vals = [i for i in
+                np.arange(self.param_data.min, self.param_data.max + self.param_data.step, self.param_data.step)]
+
+        if len(vals) == 1:
+            return Param(self.param_data, self.value)
+        else:
+            if isinstance(self.value, int):
+                vals.remove(self.value)
+            else:
+                # floats in python changes value?
+                for it in vals:
+                    if abs(it - self.value) < 0.0001:
+                        vals.remove(it)
+            pos = seed % len(vals)
+            return Param(self.param_data, vals[pos])
+
+    def gen_all(self):
+        vals = [i for i in
+                np.arange(self.param_data.min, self.param_data.max + self.param_data.step, self.param_data.step)]
+
+        return [Param(self.param_data, p) for p in vals]
+
 
 class ParamSet:
     def __init__(self, params: List[Param]):
@@ -55,6 +78,80 @@ class ParamSet:
         for p in self.params:
             ret += "\n\t" + p.param_data.name + " = " + str(p.value)
         return ret
+
+    # def gen_rand_on_param(self, param_index, seed):
+    #     np.random.seed(seed)
+    #
+    #     new_params = []
+    #     i = 0
+    #     for p in self.params:
+    #         if i == param_index:
+    #             new_params.append(self.params[i].random(np.random.randint(2147483647)))
+    #         else:
+    #             new_params.append(copy.copy(p))
+    #         i = i + 1
+    #
+    #     return ParamSet(new_params)
+    #
+    # def gen_rand_on_all_params(self, seed, history_sets=None):
+    #     np.random.seed(seed)
+    #     param_sets = []
+    #
+    #     it = 0
+    #     # try to generate at least one valid
+    #     while len(param_sets) == 0 and it < 10:
+    #         for i in range(len(self.params)):
+    #             new_set = self.gen_rand_on_param(i, np.random.randint(2147483647))
+    #             if history_sets is None:
+    #                 param_sets.append(new_set)
+    #             else:
+    #                 if not history_sets.has_set(new_set):
+    #                     param_sets.append(new_set)
+    #         it = it + 1
+    #
+    #     return param_sets
+
+    def gen_rand(self, seed):
+        np.random.seed(seed)
+
+        new_params = []
+        i = 0
+        for p in self.params:
+            new_params.append(p.random(np.random.randint(2147483647)))
+
+        return ParamSet(new_params)
+
+    def gen_mutants_on_param(self, param):
+        new_params = []
+        i = 0
+        for p in self.params:
+            if i != param:
+                new_params.append(copy.copy(p))
+            i = i + 1
+
+        mutations = self.params[param].gen_all()
+        ret = []
+
+        for it in mutations:
+            temp = copy.copy(new_params)
+            temp.append(it)
+            ret.append(ParamSet(temp))
+
+        return ret
+
+    def gen_unvisited_mutations(self, history_sets=None):
+        param_sets = []
+        new_sets = []
+        for i in range(len(self.params)):
+            new_sets.extend(self.gen_mutants_on_param(i))
+
+            for s in new_sets:
+                if history_sets is None:
+                    param_sets.append(s)
+                else:
+                    if not history_sets.has_set(s):
+                        param_sets.append(s)
+        return param_sets
 
     def n_estimators(self):
         p = None
