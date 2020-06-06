@@ -17,7 +17,7 @@ def brute_force_approach(data, target, params_dict):
                     optimal_score = score
                     optimal_params = {'dict': it, 'n_trees': n_trees}
 
-    return optimal_params
+    return optimal_params, optimal_score
 
 
 def perform_brute_force(data, target):
@@ -40,6 +40,7 @@ def best_neighbor(neighbors, history, data, target):
     maxscore = 0
     best = None
     for n in neighbors:
+        print('trained');
         n.train(data, target)
         history.add_set(n)
         if n.score > maxscore:
@@ -73,7 +74,7 @@ def perform_hill_climbing(data, target, max_worse=8, ratio=0.7):
     total_combinations = best_set.max_combinations()
     max_iter = int(total_combinations * ratio) + 1
     i = 0
-    while current_set is not None and worse_count < max_worse and max_iter <= i:
+    while current_set is not None and worse_count < max_worse and max_iter >= i:
         # equals none when all neighbors expanded
         try:
             i += 1
@@ -85,7 +86,8 @@ def perform_hill_climbing(data, target, max_worse=8, ratio=0.7):
             neighbors = current_set.generate_neighbors(history)
             best_nb = best_neighbor(neighbors, history, data, target)
             if best_nb is not None and best_nb.score >= current_set.score:  # climb  up
-                print("Climbing from " + str(current_set.score) + " to " + str(best_nb.score))
+                if best_nb.score > current_set.score:
+                    print("Climbing from " + str(current_set.score) + " to " + str(best_nb.score))
                 current_set = best_nb
                 if best_nb.score > best_set.score:
                     worse_count = 0
@@ -154,8 +156,9 @@ def perform_mutation_evolution(data, target, ratio=0.4, seed=42):
             mutant.train(data, target)
             history.add_set(mutant)
 
-            if mutant.score >= current_set.score:  # climb up
-                # print("New best, change from " + str(current_set.score) + " to " + str(mutant.score))
+            if mutant.score >= current_set.score:
+                if mutant.score > current_set.score:
+                    print("New best, change from " + str(current_set.score) + " to " + str(mutant.score))
                 current_set = mutant
 
             iteration += 1
@@ -174,16 +177,3 @@ def perform_mutation_evolution(data, target, ratio=0.4, seed=42):
 
     print("best found:\n", current_set.score)
     return current_set
-
-    # params_dict = {'max_depth': [1, 2, 3, 4, 6, 8, 10, 12, 14, 16, 24],
-    #                'eta': [0.1, 0.2, 0.3, 0.4],
-    #                'gamma': [0, 1, 2, 3],
-    #                'subsample': [0.6, 0.8, 1],
-    #                'colsample_bytree': [0.6, 0.8, 1],
-    #                'max_delta_step': [0, 1, 2],
-    #                'eval_metric': ['auc'],
-    #                'tree_method': ['hist'],
-    #                'silent': [1],
-    #                'nthread': [0],
-    #                'n_estimators': [1, 10, 25, 30]
-    #                }

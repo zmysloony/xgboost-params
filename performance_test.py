@@ -8,38 +8,48 @@ from data_loader import get_train_df
 def perf_test(data, target):
     params = {}
     times = {}
+    scores = {}
 
-    # TODO : recall
-    # start = time.perf_counter()
-    # params["brute"] = algorithms.perform_brute_force(data, target)
-    # end = time.perf_counter()
-    # times["brute"] = end - start
-    # print('end brute')
+    # brute force - evaluating every possible parameter set
+    print("Starting brute force algorithm...")
+    start = time.perf_counter()
+    params["brute"] = algorithms.perform_brute_force(data, target)
+    end = time.perf_counter()
+    times["brute"] = end - start
+    print('brute - best parameter set:\n' + str(params['brute']))
 
+    # mutation algorithm
+    print("Starting mutation algorithm...")
     for part in np.arange(0.2, 0.65, 0.15):
-        start = time.perf_counter()
-        # TODO : recall
-        params['muta_' + str(part)] = algorithms.perform_mutation_evolution(data, target, part).extract_params()
-        end = time.perf_counter()
-        times['muta_' + str(part)] = end - start
-        print('end muta_' + str(part))
+        experiment_name = 'muta_' + str(part)
 
+        start = time.perf_counter()
+        param_set = algorithms.perform_mutation_evolution(data, target, part)
+        end = time.perf_counter()
+
+        params[experiment_name] = param_set.extract_params()
+        scores[experiment_name] = param_set.score
+        times[experiment_name] = end - start
+        print(experiment_name, " - best parameter set:\n" + str(param_set))
+
+    # hill climbing algorithm
+    print("Starting hill climbing algorithm...")
     for part in np.arange(0.2, 0.65, 0.15):
         for worse in [8, 16, 24]:
-            start = time.perf_counter()
-            params["hill_" + str(part) + '_' + str(worse)] = algorithms.perform_hill_climbing(data, target,
-                                                                                              max_worse=worse,
-                                                                                              ratio=part).extract_params()
-            # TODO : recall
-            end = time.perf_counter()
-            times["hill_" + str(part) + '_' + str(worse)] = end - start
-            print('end hill_' + str(part) + '_' + str(worse))
+            experiment_name = 'hill_' + str(part) + '_' + str(worse)
 
-    print(params)
-    print(times)
+            start = time.perf_counter()
+            param_set = algorithms.perform_hill_climbing(data, target, max_worse=worse, ratio=part)
+            end = time.perf_counter()
+
+            params[experiment_name] = param_set.extract_params()
+            scores[experiment_name] = param_set.score
+            times[experiment_name] = end - start
+            print(experiment_name, " - best parameter set:\n" + str(param_set))
+
     # TODO : eval on test dataset
 
-    return params, times
+    return params, scores, times
 
 
 if __name__ == '__main__':
@@ -47,6 +57,7 @@ if __name__ == '__main__':
     driver_data_clean = get_train_df()
     driver_data_clean = replace_to_nan(driver_data_clean)
 
+    # TODO : decide if we really should remove these attribs
     driver_data_clean = driver_data_clean.drop('ps_car_03_cat', axis=1)
     driver_data_clean = driver_data_clean.drop('ps_car_05_cat', axis=1)
     driver_data_clean = driver_data_clean.drop('ps_reg_03', axis=1)
