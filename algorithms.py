@@ -204,9 +204,9 @@ def perform_mutation_evolution(data, target, ratio=0.4, seed=42):
             if mutant.score >= current_set.score:
                 if mutant.score > current_set.score:
                     dprint("New best, change from " + str(current_set.score) + " to " + str(mutant.score))
+                    times.append(time.perf_counter() - start_time)
+                    scores.append(current_set.score)
                 current_set = mutant
-                times.append(start_time - time.perf_counter())
-                scores.append(current_set.score)
 
             iteration += 1
             # mutants = TODO : current_set.generate_neighbors(history) - replace with method generating mutants -
