@@ -46,7 +46,7 @@ def brute_force_approach(data, target, params_dict):
     except KeyboardInterrupt as e:
         if len(e.args) == 1 and e.args[0] == 'timer':
             optimal_params['dict']['n_estimators'] = optimal_params['n_trees']
-            return optimal_params['dict'], scores, i, len(grid) * len(ntree_grid), times
+            return optimal_params['dict'], scores, i, max_iter, times
         else:
             if optimal_score is not None and optimal_params is not None:
                 print("best found so far :\n")
@@ -63,7 +63,7 @@ def perform_brute_force(data, target):
                    'gamma': [0, 1, 2, 3],
                    'subsample': [0.6, 0.8, 1],
                    'colsample_bytree': [0.6, 0.8, 1],
-                   'scale_pos_weigth': [1, 4, 7, 10],
+                   # 'scale_pos_weigth': [1, 4, 7, 10],
                    'max_delta_step': [0, 1, 2],
                    }
 
@@ -88,7 +88,7 @@ def best_neighbor(neighbors, history, data, target, counter: []):
 # than the best result - if that count exceeds max_worse -> returns best param set
 def perform_hill_climbing(data, target, max_worse=8, ratio=0.7):
     starting_params = [Param(ParamData('n_estimators', [50, 300], 50)),
-                       Param(ParamData('scale_pos_weight', [1, 10], 3)),
+                       #Param(ParamData('scale_pos_weight', [1, 10], 3)),
                        Param(ParamData('max_depth', [4, 14], 1)),
                        Param(ParamData('eta', [0.1, 0.4], 0.1)),
                        Param(ParamData('gamma', [0, 2], 1)),
@@ -157,7 +157,7 @@ def perform_hill_climbing(data, target, max_worse=8, ratio=0.7):
 # ratio - how many combinations to check
 def perform_mutation_evolution(data, target, ratio=0.4, seed=42):
     starting_params = [Param(ParamData('n_estimators', [50, 300], 50)),
-                       Param(ParamData('scale_pos_weight', [1, 100], 33)),
+                       #Param(ParamData('scale_pos_weight', [1, 100], 33)),
                        Param(ParamData('max_depth', [4, 14], 1)),
                        Param(ParamData('eta', [0.1, 0.4], 0.1)),
                        Param(ParamData('gamma', [0, 2], 1)),
