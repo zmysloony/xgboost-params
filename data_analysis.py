@@ -16,7 +16,7 @@ def drop_nan_rows(dataframe, print_stats=False):
 
 
 # generate the sparsity matrix (figure) for all the dataframes
-def generate_sparsity_matrix(dataframe, print=False, save=False):
+def generate_sparsity_matrix(dataframe, do_print=False, save=False):
     missing_df = dataframe.columns[dataframe.isnull().any()].tolist()
     ax0 = fig = msno.matrix(dataframe[missing_df], figsize=(20, 5))
     if print:
@@ -36,6 +36,6 @@ def check_data_imbalance(dataframe):
 
 def analyse_dataset(dataframe):
     nan_df = replace_to_nan(dataframe)
-    z = drop_nan_rows(nan_df, True)
+    # z = drop_nan_rows(nan_df, True)
     generate_sparsity_matrix(nan_df, True)
     check_data_imbalance(nan_df)

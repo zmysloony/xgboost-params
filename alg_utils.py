@@ -6,6 +6,13 @@ import copy
 import numpy as np
 
 
+def str_extracted_params(params: {}, score):
+    ret = "Score: " + str(score) + " Params:"
+    for k, v in params.items():
+        ret += "\n\t" + k + " = " + str(v)
+    return ret
+
+
 class ParamData:
     def __init__(self, name, span, step):
         self.name = name
@@ -160,19 +167,16 @@ class ParamSet:
                 break
         return p
 
-    def extract_params(self):
+    def extract_params(self, no_estim=False):
         ls = {}
         for p in self.params:
             ls[p.param_data.name] = p.value
-            # if p.name != 'n_estimators':
-            #     l[p.name] = p.value
-        # TODO
-        ls['eval_metric'] = 'auc'
-        ls['tree_method'] = 'gpu_hist'
+        if no_estim:
+            del ls['n_estimators']
         return ls
 
     def train(self, data, target):
-        auc_roc = trainxgb(data, target, self.extract_params(), self.n_estimators().value)
+        auc_roc = trainxgb(data, target, self.extract_params(True), self.n_estimators().value)
         self.score = auc_roc
         # return model
 
@@ -314,3 +318,6 @@ class ParameterGrid:
                 for v in product(*values):
                     params = dict(zip(keys, v))
                     yield params
+
+    def __len__(self):
+        return len(self.param_grid)

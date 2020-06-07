@@ -4,13 +4,24 @@ from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import KFold
 
 
-# def smote_oversample(features, labels, seed, neighbours=15):
-#     smote = SMOTE(random_state=seed, k_neighbors=neighbours)
-#     return smote.fit_resample(features, labels)
+use_gpu = False
+
+
+def set_use_gpu():
+    global use_gpu
+    use_gpu = True
 
 
 def train_score(data, target, params, rounds=1, k_fold_ratio=3, rand=3228):
     k_fold = KFold(n_splits=k_fold_ratio, random_state=rand, shuffle=True)
+    params['eval_metric'] = 'auc'
+    if use_gpu:
+        params['tree_method'] = 'gpu_hist'
+    else:
+        params['tree_method'] = 'hist'
+    params['silent'] = 1
+    params['verbosity'] = 0
+    params['nthread'] = 0
 
     recalls = []
     data_arr = np.array(data)

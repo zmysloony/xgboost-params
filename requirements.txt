@@ -1,8 +1,8 @@
-pandas~=1.0.3
+pandas~=1.0.4
 matplotlib~=3.2.1
 missingno~=0.4.2
 xgboost~=1.0.2
-numpy~=1.18.2
-scikit-learn~=0.22.2.post1
+numpy~=1.18.5
+scikit-learn~=0.23.1
 imblearn~=0.0
 impyute~=0.0.8
