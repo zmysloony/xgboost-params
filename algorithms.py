@@ -5,7 +5,7 @@ from alg_utils import Param, ParamData, ParamSet, ParamSetsHistory, ParameterGri
 import numpy as np
 
 
-print_debug = True
+print_debug = False
 
 
 def dprint(*printargs):
