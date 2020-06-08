@@ -117,9 +117,6 @@ Zaimplementowaliśmy następujące algorytmy:
 	\item przegląd wyczerpujący hipersiatki jako metoda bazowa\\
 \end{itemize}
 
-W przypadku mutacji połączonej z tabu, problematycznym okazało się tworzenie mutantów z wykorzystaniem rozkładu normalnego, jak i mutacji w ten sam sposób wielu parametrów - tworzone były wielokrotnie już sprawdzone zestawy parametrów.\\\\
-Przyjeliśmy metodę w której tworzone są wszystkie (jeszcze niezbadane) możliwe zestawy różniące się jednym parametrem w stosunku do rodzica i spośród nich losowany jest nowy mutant.
-
 \subsection{Przestrzeń poszukiwań}
 Trenowane modele posiadały parametry z hipersiatki, czyli iloczyn zbiorów każdego z parametrów, co w sumie daje nam 52272 dopuszczalnych rozwiązań.
 \begin{center}
@@ -154,7 +151,7 @@ Ta sama funkcja zostanie wykorzystana do oceny jakości finalnych wytrenowanych 
 \subsection{Algorytm brutalny}
 Algorytm brutalny generuje zbiór wszystkich możliwych zestawów parametrów, które przegląda krok po kroku. Wynikiem działania jest zestaw parametrów osiągający najwyższy wynik AUC ROC.
 
-\subsection{Algorytm wspinaczkowy}
+\subsection{Stabuizowany algorytm wspinaczkowy z przeglądem sąsiedztwa}
 Jako parametr startowy algorytmu należy podać maksymalną ilość powrotów \texttt{n\_max}, które może wykonać przed zwróceniem aktualnego najlepszego wyniku. Zaczyna swoje działanie od wylosowania punktu startowego z dostępnych zbiorów parametrów (na początku przypisujemy go do \texttt{P\_b} i \texttt{P\_c}). Oblicza wynik dla \texttt{P\_c} dalej w następujący sposób:
 \texttt{
 \begin{enumerate}
@@ -178,10 +175,31 @@ Jako parametr startowy algorytmu należy podać maksymalną ilość powrotów \t
 \end{enumerate}
 }
 
+\subsection{Stabuizowany mutacyjny algorytm wspinaczkowy}
 
+W przypadku mutacji połączonej z tabu, problematycznym okazało się tworzenie mutantów z wykorzystaniem rozkładu normalnego, jak i mutacji w ten sam sposób wielu parametrów - tworzone były wielokrotnie już sprawdzone zestawy parametrów.\\\\
+Przyjeliśmy metodę w której tworzone są wszystkie (jeszcze niezbadane) możliwe zestawy różniące się jednym parametrem w stosunku do rodzica i spośród nich losowany jest nowy mutant.
+\\\\
+Zaczyna swoje działanie od wylosowania punktu startowego z dostępnych zbiorów parametrów - \texttt{P\_r}. Następni sprawdza kolejne mutacje punktu początkowego przyjmując je jako punkt roboczy o ile metryka ma wyższą wartość.
 
-
-
+\texttt{
+	\begin{enumerate}
+		\item Zainicjuj zestaw parametrów
+		\item Wygeneruj wszystkie (nigdy nieodwiedzone) mutantacje P\_r.
+		\item Jeśli nie kolejnych mutacji STOP
+		\begin{itemize}
+			\item Zwróć zestaw parametrów P\_r.
+		\end{itemize}
+		\item Jeżeli istnieje:
+		\begin{enumerate}
+			\item Wybierz losowo mutacje P\_m.
+			\item Ewaluuj mutanta.
+			\item Jeżeli wynik P\_m >= P\_r: P\_r = P\_m
+		\end{enumerate}
+		\item Wróć do punktu 2.
+		\item Zwróć zestaw parametrów P\_r.
+	\end{enumerate}
+}
 
 \section{Sposób mierzenia jakości rozwiązania}
 Jako że trenowanie znacznej liczby modeli przy użyciu adekwatnych ilości danych wejściowych jest bardzo czasochłonne, postanowiliśmy zaimplementować opcję testowania wszystkich trzech algorytmów w określonych ramach czasowych. Dzięki podaniu odpowiedniego parametru, program uruchamia każdy z nich tylko na jakiś czas, po którym algorytm musi zwrócić najlepszy dotychczasowy wynik.
@@ -205,7 +223,7 @@ Na wykresie, około 50. sekundy możemy zaobserwować taką mutację zestawu par
 
 
 \section{Wnioski i rekomendacje}
-% tak serio to trzeba napisać coś XDDDD
-Algorytmy zbytnio nie były efektywne \textit{imho} należałoby walnąc se parę paramsów i okolice obiecujących zbadać przegłądem wyczerpującym Xd
+\paragraph{ tak serio to trzeba napisać coś dobrego XDDDD\\\\}
+Algorytm mutacyjny w naszych próbach typowo osiąga szybciej szczytowe rezultaty szybciej od algorytmu z przeglądem sąsiedztwa. Metryki znalezione przez te algorytmu mimo przeglądu 50\% są bliskie optymalnemu [różnica poniżej 0.01 metryki], co ciekawe uruchomienie nawet dla 5\% daje zbliżone rezultaty.
 
 \end{document}
