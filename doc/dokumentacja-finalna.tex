@@ -116,7 +116,6 @@ Zaimplementowaliśmy następujące algorytmy:
 		\end{itemize}
 	\item przegląd wyczerpujący hipersiatki jako metoda bazowa\\
 \end{itemize}
-
 \subsection{Przestrzeń poszukiwań}
 Trenowane modele posiadały parametry z hipersiatki, czyli iloczyn zbiorów każdego z parametrów, co w sumie daje nam 52272 dopuszczalnych rozwiązań.
 \begin{center}
@@ -219,11 +218,21 @@ Otrzymane rezultaty dla algorytmu wspinaczkowego i algorytmu mutacyjnego są odd
 	\centering
 	\includegraphics[scale=0.85]{nice_mutation}
 \end{figure}
-Na wykresie, około 50. sekundy możemy zaobserwować taką mutację zestawu parametrów, która dała znaczny wzrost AUC ROC, a potem wyraźny jest proces znajdywania przez algorytm lokalnego optimum.
+Na powyższym wykresie, około 50. sekundy możemy zaobserwować taką mutację zestawu parametrów, która dała znaczny wzrost AUC ROC, a potem wyraźny jest proces znajdywania przez algorytm lokalnego optimum.
+\begin{figure}[H]
+	\caption{Trafność warunku stopu algorytmu z przeglądem sąsiedztwa}
+	\label{nice_mutation}
+	\centering
+	\includegraphics[scale=0.85]{bad_mutation}
+\end{figure}
+Na rysunku 3, między 50. a 100. sekundą, widoczne jest działanie warunku stopu dla algorytmu z przeglądem sąsiedztwa. Warunkiem stopu dla algorytmu mutacyjnego jest jedynie pokrycie odpowiedniej ilości przestrzeni rozwiązań (w tym wypadku jest to 5\%). 
 
+Zastosowany algorytm z przeglądem sąsiedztwa posiadał ilość maksymalnych powrotów ustawioną na 8, co okazuje się trafne, ponieważ przez następne 300 sekund działania, algorytm z mutacjami nie potrafił znaleźć znacznie lepszego rozwiązania, podczas gdy poprzedni już skończył swoje działanie. Niewykluczone, że wartość ta może być mniejsza, co pozwoli jeszcze bardziej zaoszczędzić na czasie przetwarzania.
 
 \section{Wnioski i rekomendacje}
-\paragraph{ tak serio to trzeba napisać coś dobrego XDDDD\\\\}
-Algorytm mutacyjny w naszych próbach typowo osiąga szybciej szczytowe rezultaty szybciej od algorytmu z przeglądem sąsiedztwa. Metryki znalezione przez te algorytmu mimo przeglądu 50\% są bliskie optymalnemu [różnica poniżej 0.01 metryki], co ciekawe uruchomienie nawet dla 5\% daje zbliżone rezultaty.
+\paragraph{Porównanie obu algorytmów}
+Algorytm mutacyjny w naszych próbach typowo osiąga szybciej szczytowe rezultaty szybciej od algorytmu z przeglądem sąsiedztwa. Metryki znalezione przez te algorytmu mimo przeglądu 50\% są bliskie optymalnemu [różnica poniżej 0.01 metryki], co ciekajak bedziemy poprawiac to we uruchomienie nawet dla 5\% daje zbliżone rezultaty.
+\paragraph{Testowanie}
+Niestety komputery domowe nie są idealnym narzędziem do szybkiego trenowania modeli przez XGBoost - testowanie heurustyk było mocno ograniczone przez niewystarczającą moc sprzętu. Stąd benchmarking obu algorytmów powinny być uruchamiany na zdecydowanie mocniejszych maszynach.
 
 \end{document}

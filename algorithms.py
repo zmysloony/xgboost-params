@@ -5,7 +5,7 @@ from alg_utils import Param, ParamData, ParamSet, ParamSetsHistory, ParameterGri
 import numpy as np
 
 
-print_debug = False
+print_debug = True
 
 
 def dprint(*printargs):
@@ -105,6 +105,7 @@ def perform_hill_climbing(data, target, max_worse=8, ratio=0.7):
     best_set = best_set.gen_rand(np.random.randint(2147483647))
 
     start_time = time.perf_counter()
+    best_set.train(data, target)
     times = [0]
     scores = [best_set.score]
     current_set = best_set
@@ -117,7 +118,7 @@ def perform_hill_climbing(data, target, max_worse=8, ratio=0.7):
             # current_set equals None when all neighbors expanded
 
             dprint("Set " + str(i[0]) + "/" + str(total_combinations))
-            current_set.train(data, target)
+            #current_set.train(data, target)
             history.add_set(current_set)
             history.mark_expanded(current_set)
 
