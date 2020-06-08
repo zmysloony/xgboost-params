@@ -46,7 +46,7 @@ def perf_test(data, target, t_args: {}):
     if t_args['mutation']:
         print("Starting mutation algorithm...")
         # for part in np.arange(0.2, 0.65, 0.15):
-        for part in [0.5]:
+        for part in [0.05, 0.1, 0.25, 0.5]:
             experiment_name = 'muta_' + str(part)
 
             if t_args['timeout']:
@@ -66,8 +66,8 @@ def perf_test(data, target, t_args: {}):
         print("Starting hill climbing algorithm...")
         #for part in np.arange(0.2, 0.65, 0.15):
             #for worse in [8, 16, 24]:
-        for part in [0.5]:
-            for worse in [6]:
+        for part in [0.05, 0.1, 0.25, 0.5]:
+            for worse in [8]:
                 experiment_name = 'hill_' + str(part) + '_' + str(worse)
 
                 start = time.perf_counter()
