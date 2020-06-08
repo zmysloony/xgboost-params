@@ -101,7 +101,7 @@ Jako dane na których będziemy trenować i testować klasyfikatory przyjęliśm
 \subsection{Analiza danych}
 Po wstępnej analizie danych odkryliśmy, że w zbiorze danych posiadamy około 79\% niekompletnych wierszy. Rysunek \ref{attrib_analysis} przedstawia pokrycie niekompletnych atrybutów - jest ich jedynie 13, z czego większość jest wybrakowana w bardzo niewielkim stopniu.
 
-Największym winowajcą jest atrybut binarny \textsl{ps\_car\_03\_cat}, którego brakuje aż w 70\% wierszy, oraz atrybut \textsl{ps\_car\_05\_cat} (brakuje go w 44\% przypadków).
+Największym winowajcą jest atrybut binarny \textsl{ps\_car\_03\_cat}, którego brakuje aż w 70\% wierszy, oraz atrybut \textsl{ps\_car\_05\_cat} (brakuje go w 44\% przypadków). W końcowej wersji zdecydowaliśmy się usunąć oba z tych parametrów.
 
 Dodatkowo, występuje znaczna dysproporcja między klasami rekordów - tylko 3\% wierszy opisuje klientów, którzy skorzystali z ubezpieczenia. Stąd niezbędna będzie interpolacja danych, tak aby ilość rekordów obu klas była równa.
 
@@ -117,11 +117,11 @@ Zaimplementowaliśmy następujące algorytmy:
 	\item przegląd wyczerpujący hipersiatki jako metoda bazowa\\
 \end{itemize}
 
-W przypadku mutacji połączonej z  tablu problematycznym okazało się tworzenie mutantów z wykoorzystaniem rozkłądu normalnego, jak i mutacji w ten sam sposób wielu parametrów - tworzone były wielokrotnie już sprawdzone zestawy parametrów.\\\\
-Przyjeliśmy metodę w której tworzone są wszystkie mozliwe zmiany pojedyńczego parametru [jeszcze niesprawdzone] i z pośród nich losowany jest nowy mutant.
+W przypadku mutacji połączonej z tabu, problematycznym okazało się tworzenie mutantów z wykorzystaniem rozkładu normalnego, jak i mutacji w ten sam sposób wielu parametrów - tworzone były wielokrotnie już sprawdzone zestawy parametrów.\\\\
+Przyjeliśmy metodę w której tworzone są wszystkie (jeszcze niezbadane) możliwe zestawy różniące się jednym parametrem w stosunku do rodzica i spośród nich losowany jest nowy mutant.
 
 \subsection{Przestrzeń poszukiwań}
-Trenowane parametry - hipersiatka, iloczyn zbiorów każdego z parametrów.
+Trenowane modele posiadały parametry z hipersiatki, czyli iloczyn zbiorów każdego z parametrów, co w sumie daje nam 52272 dopuszczalnych rozwiązań.
 \begin{center}
 	\begin{tabular}{|c|c|}
 		\hline
@@ -135,8 +135,6 @@ Trenowane parametry - hipersiatka, iloczyn zbiorów każdego z parametrów.
 		min\_split\_loss \textit{gamma} & 0, 1, 2, 3\\ % 20 = extremly high
 		\hline 
 		max\_depth & 4, 5, 6 ... 14\\
-	    \hline
-		min\_child\_weight & 1, 2\\
 		\hline 
 		max\_delta\_step & 0, 1, 2\\
 		\hline 
@@ -145,16 +143,30 @@ Trenowane parametry - hipersiatka, iloczyn zbiorów każdego z parametrów.
 		colsample\_bytree &  0.6, 0.8, 1\\ % 1 = default
 		\hline 
 	\end{tabular}
-\end{center}                         
+\end{center}
+
+Dalej, \textit{sąsiadem} zestawu A będziemy nazywali takie zestawy parametrów, które od zestawu A różnią się tylko jednym parametrem, większym bądź mniejszym o jeden "kwant".
+
+\subsection{Funkcja celu}
+Jako funkcję celu przybraliśmy \textit{Average Precision Recall} obliczając wartość funkcji celu jako średnią arytmetyczną skuteczności przypisania predykcji. Zastosowaliśmy implementację z pakietu \textit{scikit-learn}.\\
+Ta sama funkcja zostanie wykorzystana do oceny jakości finalnych wytrenowanych modeli na zbiorach testowych, przy 3-krotnej walidacji krzyżowej, gdzie nasz końcowy jest średnią osiągniętych wyników AUC ROC.
+
+\subsection{Algorytm brutalny}
+Algorytm brutalny generuje zbiór wszystkich możliwych zestawów parametrów, które przegląda krok po kroku. Wynikiem działania jest zestaw parametrów osiągający najwyższy wynik AUC ROC.
+
+\subsection{Algorytm wspinaczkowy}
+Zaczyna swoje działanie od wylosowania punktu startowego z dostępnych zbiorów parametrów (na początku przypisujemy go do \texttt{P\_b} i \texttt{P\_c}). Oblicza AUC ROC dalej w następujący sposób:
+\texttt{1. wygeneruj wszystkich sąsiadów P\_c}
+    
+\textbf{TODO PISAC CZY NIE PISAC TE PSEUDOKODY}                   
 
 
 
 
-\section{Funkcja celu}
-Jako funkcję celu przybraliśmy \textit{Average Precision Recall} obliczając wartość funkcji celu jako średnią arytmetyczną skuteczności przypisania predykcji. Planujemy wykorzystać implementację z pakietu \textit{scikit-learn}.\\
-Ta sama funkcja zostanie wykorzystana do oceny jakości finalnych wytrenowanych modeli na zbiorze testowym.
+
 
 \section{Sposób mierzenia jakości rozwiązania}
+Jako że trenowanie znacznej liczby modeli przy użyciu adekwatnych ilości danych wejściowych jest bardzo czasochłonne, postanowiliśmy zaimplementować opcję testowania wszystkich trzech algorytmów w określonych ramach czasowych. Dzięki podaniu odpowiedniego parametru, program uruchamia każdy z nich tylko na jakiś czas, po którym algorytm musi zwrócić najlepszy dotychczasowy wynik.
 %Będziemy porównywać algorytm pod kątem czasu działania względem wyczerpującego przeglądu, analizując czy zysk z szybszego doboru parametrów jest wystarczająco duży, by go stosować dla różnych limitów przejrzanych kombinacji dla naszych algorytmów.
 %\\
 %Zbiór danych zostanie podzielony na 2 podzbiory - uczenia i testowy \textsl{uczący odpowiednio większy}. Na zbiorze testowym nie będziemy uczyć i podejmować decyzji - zostanie on wykorzystany do zmierzenia działania algorytmu po dobraniu wszystkich parametrów. Zbiór uczący będzie działać z k-krotną walidacją krzyżową lub podzielony na zbiór uczenia i weryfikacyjny.

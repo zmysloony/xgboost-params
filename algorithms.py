@@ -92,7 +92,7 @@ def perform_hill_climbing(data, target, max_worse=8, ratio=0.7):
                        #Param(ParamData('scale_pos_weight', [1, 10], 3)),
                        Param(ParamData('max_depth', [4, 14], 1)),
                        Param(ParamData('eta', [0.1, 0.4], 0.1)),
-                       Param(ParamData('gamma', [0, 2], 1)),
+                       Param(ParamData('gamma', [0, 3], 1)),
                        Param(ParamData('subsample', [0.6, 1], 0.2)),
                        Param(ParamData('colsample_bytree', [0.6, 1], 0.2)),
                        Param(ParamData('max_delta_step', [0, 2], 1))]
@@ -161,7 +161,7 @@ def perform_mutation_evolution(data, target, ratio=0.4, seed=42):
                        #Param(ParamData('scale_pos_weight', [1, 100], 33)),
                        Param(ParamData('max_depth', [4, 14], 1)),
                        Param(ParamData('eta', [0.1, 0.4], 0.1)),
-                       Param(ParamData('gamma', [0, 2], 1)),
+                       Param(ParamData('gamma', [0, 3], 1)),
                        Param(ParamData('subsample', [0.6, 1], 0.2)),
                        Param(ParamData('colsample_bytree', [0.6, 1], 0.2)),
                        Param(ParamData('max_delta_step', [0, 2], 1))]
