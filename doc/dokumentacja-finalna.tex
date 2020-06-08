@@ -194,7 +194,14 @@ Wszystkie opcje uruchomieniowe programu można sprawdzić poleceniem:
 %Zbiór danych zostanie podzielony na 2 podzbiory - uczenia i testowy \textsl{uczący odpowiednio większy}. Na zbiorze testowym nie będziemy uczyć i podejmować decyzji - zostanie on wykorzystany do zmierzenia działania algorytmu po dobraniu wszystkich parametrów. Zbiór uczący będzie działać z k-krotną walidacją krzyżową lub podzielony na zbiór uczenia i weryfikacyjny.
 
 \section{Wyniki pomiarów}
-
+Otrzymane rezultaty dla algorytmu wspinaczkowego i algorytmu mutacyjnego są oddalone od siebie nieznacznie, ale różnice możemy zaobserwować w przebiegu ich działania. Poniższe wykresy reprezentują wszystkie zestawy parametrów, które pobiły dotychczasowy najlepszy wynik.
+\begin{figure}[H]
+	\caption{Wykres najlepszego dotychczasowego wyniku w zależności od czasu}
+	\label{nice_mutation}
+	\centering
+	\includegraphics[scale=0.85]{nice_mutation}
+\end{figure}
+Na wykresie, około 50. sekundy możemy zaobserwować taką mutację zestawu parametrów, która dała znaczny wzrost AUC ROC, a potem wyraźny jest proces znajdywania przez algorytm lokalnego optimum.
 
 
 \section{Wnioski i rekomendacje}
