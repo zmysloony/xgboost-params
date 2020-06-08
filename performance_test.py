@@ -88,6 +88,8 @@ def perf_test(data, target, t_args: {}):
 
 
 if __name__ == '__main__':
+    if not check_data_files():
+        exit(1)
     parser = argparse.ArgumentParser(description='XGBoost hyperparameter adjustment using heuristics')
     parser.add_argument('-a', '--analysis', help='Run data analysis and output results.', required=False, action='store_true')
     parser.add_argument('-t', '--timeout', help='Set timeout for each algorithm when testing.', required=False, default=300)

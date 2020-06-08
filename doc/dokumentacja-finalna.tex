@@ -155,10 +155,28 @@ Ta sama funkcja zostanie wykorzystana do oceny jakości finalnych wytrenowanych 
 Algorytm brutalny generuje zbiór wszystkich możliwych zestawów parametrów, które przegląda krok po kroku. Wynikiem działania jest zestaw parametrów osiągający najwyższy wynik AUC ROC.
 
 \subsection{Algorytm wspinaczkowy}
-Zaczyna swoje działanie od wylosowania punktu startowego z dostępnych zbiorów parametrów (na początku przypisujemy go do \texttt{P\_b} i \texttt{P\_c}). Oblicza AUC ROC dalej w następujący sposób:
-\texttt{1. wygeneruj wszystkich sąsiadów P\_c}
-    
-\textbf{TODO PISAC CZY NIE PISAC TE PSEUDOKODY}                   
+Jako parametr startowy algorytmu należy podać maksymalną ilość powrotów \texttt{n\_max}, które może wykonać przed zwróceniem aktualnego najlepszego wyniku. Zaczyna swoje działanie od wylosowania punktu startowego z dostępnych zbiorów parametrów (na początku przypisujemy go do \texttt{P\_b} i \texttt{P\_c}). Oblicza wynik dla \texttt{P\_c} dalej w następujący sposób:
+\texttt{
+\begin{enumerate}
+\item Ustaw liczbę nawrotów n = 0
+\item Jeśli n > n\_max, przejdź do punktu ostatniego.
+\item Wygeneruj wszystkich (nigdy nieodwiedzonych) sąsiadów P\_c.
+\item Wybierz sąsiada, który daje wynik lepszy bądź równy wynikowi P\_c.
+\item Jeśli nie istnieje taki sąsiad:
+	\begin{enumerate}
+	\item n = n + 1
+	\item ustaw P\_c na poprzedni P\_c
+	\end{enumerate}
+\item Jeżeli istnieje:
+	\begin{enumerate}
+	\item n = 0
+	\item P\_c = najlepszy sąsiad
+	\item Jeżeli wynik P\_c >= P\_b: P\_b = P\_c
+	\end{enumerate}
+\item Wróć do punktu 2.
+\item Zwróć najlepszy zestaw parametrów.
+\end{enumerate}
+}
 
 
 
@@ -167,6 +185,10 @@ Zaczyna swoje działanie od wylosowania punktu startowego z dostępnych zbiorów
 
 \section{Sposób mierzenia jakości rozwiązania}
 Jako że trenowanie znacznej liczby modeli przy użyciu adekwatnych ilości danych wejściowych jest bardzo czasochłonne, postanowiliśmy zaimplementować opcję testowania wszystkich trzech algorytmów w określonych ramach czasowych. Dzięki podaniu odpowiedniego parametru, program uruchamia każdy z nich tylko na jakiś czas, po którym algorytm musi zwrócić najlepszy dotychczasowy wynik.
+
+Wszystkie opcje uruchomieniowe programu można sprawdzić poleceniem:
+
+ \texttt{python performance\_test.py -\--help}
 %Będziemy porównywać algorytm pod kątem czasu działania względem wyczerpującego przeglądu, analizując czy zysk z szybszego doboru parametrów jest wystarczająco duży, by go stosować dla różnych limitów przejrzanych kombinacji dla naszych algorytmów.
 %\\
 %Zbiór danych zostanie podzielony na 2 podzbiory - uczenia i testowy \textsl{uczący odpowiednio większy}. Na zbiorze testowym nie będziemy uczyć i podejmować decyzji - zostanie on wykorzystany do zmierzenia działania algorytmu po dobraniu wszystkich parametrów. Zbiór uczący będzie działać z k-krotną walidacją krzyżową lub podzielony na zbiór uczenia i weryfikacyjny.
