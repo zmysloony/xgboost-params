@@ -14,6 +14,7 @@ def dprint(*printargs):
 
 
 def brute_force_approach(data, target, params_dict):
+    #TODO : RANDOMIZE STARTING PARAMS!!!
     start_timer = time.perf_counter()
     optimal_params = None
     optimal_score = None
